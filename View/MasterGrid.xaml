@@ -1,0 +1,171 @@
+﻿<UserControl 
+    x:Class="BABollettari.Views.Bollettari.MasterGrid"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    
+    
+    xmlns:local="clr-namespace:BABollettari.Views.Bollettari"   
+    xmlns:localWebServices="clr-namespace:BABollettari.Web.Services"  
+    
+    xmlns:dataControls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"         
+    
+    xmlns:telerik="clr-namespace:Telerik.Windows.Controls;assembly=Telerik.Windows.Controls.GridView"
+    
+    xmlns:controls="clr-namespace:Telerik.Windows.Controls;assembly=Telerik.Windows.Controls"   
+    xmlns:ria="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.DomainServices" 
+    
+    mc:Ignorable="d"
+    d:DesignHeight="400" d:DesignWidth="400">
+
+
+
+             
+    
+
+
+    <UserControl.Resources>
+        <Style x:Key="TooltipStyle" TargetType="ToolTip">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Background="Beige">
+                            <ContentPresenter Margin="5" Content="{TemplateBinding Content}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" Background="White">
+
+        <Grid.Resources>
+            <DataTemplate x:Key="BollettarioDetailsTemplate">
+                <local:DetailsGrid  Loaded="BollettarioDetailsControl_Loaded" >
+                </local:DetailsGrid >
+            </DataTemplate>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="380"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="*" />
+
+            <ColumnDefinition Width="50" />
+        </Grid.ColumnDefinitions>
+
+
+        
+        
+        <ria:DomainDataSource x:Name="BollettarioDataSource"
+                          QueryName ="GetV_BollettarioByProgTipografo"
+                          IsEnabled="True" 
+                          AutoLoad="True"
+                          LoadSize="100">
+
+
+            <ria:DomainDataSource.DomainContext>
+                <localWebServices:BollettarioDomainContext  />
+            </ria:DomainDataSource.DomainContext>
+
+        </ria:DomainDataSource>
+
+
+        <StackPanel Orientation="Vertical" Grid.Row="0" Grid.ColumnSpan="2"   >
+            <ScrollViewer Width="1000" Height="350" VerticalScrollBarVisibility="Visible" >
+
+                <telerik:RadGridView RowDetailsTemplate="{StaticResource BollettarioDetailsTemplate}"
+                             Name="BollettarioDataGrid" 
+                             controls:StyleManager.Theme="Office_Blue"
+                             Margin="5" Width="950"
+                             ItemsSource="{Binding Data, ElementName=BollettarioDataSource}"                 
+							 CanUserFreezeColumns="False" 
+                             CanUserResizeColumns="True" 
+							 RowIndicatorVisibility="Collapsed"
+                             AutoGenerateColumns="False"
+                             
+                             IsReadOnly="True"
+                             ShowGroupPanel="False"
+                             
+                             SelectionChanged="BollettarioDataGrid_SelectionChanged"                             
+                            
+                                 >
+                    <!--ColumnsWidthMode="Fill"-->
+
+                    <telerik:RadGridView.Columns>
+                        <local:DetailsToggleColumn   Width="50" />
+                        <!--<telerik:GridViewDataColumn Header="IdBollettario" Width="100"  DataMemberBinding="{Binding IdBollettario}" />-->
+                        <telerik:GridViewDataColumn Header="progTipografo" DataMemberBinding="{Binding progTipografo}"/>
+                        <telerik:GridViewDataColumn Header="NumBollette" DataMemberBinding="{Binding NumBollette}"/>
+                        <telerik:GridViewDataColumn Header="progCimitero" DataMemberBinding="{Binding progCimitero}" />
+                        <telerik:GridViewDataColumn Header="cComune"  DataMemberBinding="{Binding cComune}" />
+                        <telerik:GridViewDataColumn Header="cCimitero"  DataMemberBinding="{Binding cCimitero}" />
+                        <!--<telerik:GridViewDataColumn Header="cStatusBollettario"  DataMemberBinding="{Binding cStatusBollettario}" />-->
+                        <telerik:GridViewDataColumn Header="StatoBollettario"  DataMemberBinding="{Binding StatoBollettario}" />
+
+
+                        <telerik:GridViewDataColumn  UniqueName="Azioni">
+                            <telerik:GridViewDataColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel x:Name="stpAction" Orientation="Horizontal" HorizontalAlignment="Center">
+
+                                        <!---->
+                                        <Button x:Name="btnEmetti" Click="EmettiBollettario_Click"  >
+                                            <Image Source="Image/EDIT_16.png" Width="16" Height="16"/>
+                                            <ToolTipService.ToolTip>
+                                                <ToolTip Width="200" Height="30" Style="{StaticResource TooltipStyle}">
+                                                    <TextBlock Text="Emetti il bollettario selezionato"/>
+                                                </ToolTip>
+                                            </ToolTipService.ToolTip>                                                                                        
+                                        </Button>
+                                        <Button x:Name="btnDelete" >
+                                            <Image Source="Image/DELETE_32.png" Width="16" Height="16"/>
+                                            <ToolTipService.ToolTip>
+                                                <ToolTip Width="200" Height="30" Style="{StaticResource TooltipStyle}">
+                                                    <TextBlock Text="Consegna il bollettario selezionato"/>
+                                                </ToolTip>
+                                            </ToolTipService.ToolTip>                                            
+                                        </Button>
+                                        <Button x:Name="btnRitiro" >
+                                            <Image Source="Image/DELETE_32.png" Width="16" Height="16"/>
+                                            <ToolTipService.ToolTip>
+                                                <ToolTip Width="200" Height="30" Style="{StaticResource TooltipStyle}">
+                                                    <TextBlock Text="Ritiro del bollettario selezionato"/>
+                                                </ToolTip>
+                                            </ToolTipService.ToolTip>                                            
+                                        </Button>
+                                        <Button x:Name="btnStoria" >
+                                            <Image Source="Image/DELETE_32.png" Width="16" Height="16"/>
+                                            <ToolTipService.ToolTip>
+                                                <ToolTip Width="200" Height="30" Style="{StaticResource TooltipStyle}">
+                                                    <TextBlock Text="Storia del bollettario selezionato"/>
+                                                </ToolTip>
+                                            </ToolTipService.ToolTip>                                            
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </telerik:GridViewDataColumn.CellTemplate>
+                        </telerik:GridViewDataColumn>
+
+                    </telerik:RadGridView.Columns>
+                </telerik:RadGridView>
+            </ScrollViewer>
+
+
+
+
+        </StackPanel>
+        <dataControls:DataPager x:Name="DataPagerBollettario"  Grid.Row="1" Grid.Column="1" Width="700" 
+            PageSize ="10" Source="{Binding Data, ElementName=BollettarioDataSource}" DisplayMode="FirstLastPreviousNext" 
+            PageIndexChanged="DataPagerBollettario_PageIndexChanged"                                 
+            />
+
+
+
+    </Grid>
+</UserControl>
